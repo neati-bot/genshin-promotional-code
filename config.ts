@@ -11,14 +11,15 @@
  * Server codes whose entries should pass the Asia-redeemable filter.
  *
  * fandom wiki's `Code Row` template tags each code with a server marker.
- * Observed values include: G (Global), CN, NA, EU, SEA, ASIA. A player
- * on the Asia server can redeem global codes plus codes explicitly
- * marked for the Asia / SEA region; everything else is excluded.
+ * Observed values: G (Global = NA/EU/SEA/SAR), A (all incl. CN),
+ * SEA (Asia), CN, NA, EU, SAR (TW/HK/Macao). A player on the Asia
+ * server can redeem any code marked G, A, SEA, or ASIA; everything
+ * else is excluded.
  *
  * To broaden the filter (e.g. notify on every active code regardless
  * of server), add the relevant codes here — `NA`, `EU`, `CN`, etc.
  */
-export const ALLOWED_SERVERS: readonly string[] = ['G', 'SEA', 'ASIA'];
+export const ALLOWED_SERVERS: readonly string[] = ['G', 'A', 'SEA', 'ASIA'];
 
 /**
  * How many consecutive scrape/parse failures must occur before the
