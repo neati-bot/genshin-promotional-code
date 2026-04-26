@@ -1,0 +1,51 @@
+name: Check Genshin Codes
+
+on:
+  schedule:
+    # Runs every 30 minutes. To change the cadence, edit only this line —
+    # GitHub will pick up the new schedule on the next push to main.
+    # Note: scheduled workflows can be delayed 5–15+ minutes during high
+    # load on GitHub's runners; the interval is best-effort.
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: check-codes
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --omit=dev --include=dev
+
+      - name: Run notifier
+        run: npm run check
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Commit state changes
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/ || true
+          if ! git diff --staged --quiet; then
+            git commit -m "chore(state): update seen codes [skip ci]"
+            git push
+          else
+            echo "No state changes to commit."
+          fi
