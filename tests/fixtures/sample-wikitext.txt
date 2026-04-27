@@ -73,6 +73,12 @@ To add to this list:
     -->|Primogem*60;Adventurer's Experience*5<!--
     -->|2026-02-14|unknown<!--
 -->}}
+{{Code Row<!--
+    -->|GROUPCODE1ABC;GROUPCODE2DEF|G<!--
+    -->|Primogem*60;Adventurer's Experience*5<!--
+    -->|2026-01-15|unknown<!--
+    -->|Using any of the codes will render the other(s) unusable.<!--
+-->}}
 {{Code Row|GENSHINGIFT|G|Primogem*50;Hero's Wit*3|2020-11-10|indef|Found in ads located on YouTube and similar. Code hit max usage 5 August 2021, but started working again as early as 11 August 2021.}}
 {{Code Row|YuanShen|CN|Primogem*50;Hero's Wit*3|2020-11-10|indef}}
 {{Code Row/Footer}}

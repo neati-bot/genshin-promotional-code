@@ -64,9 +64,28 @@ describe('parseCodes', () => {
     expect(fairy?.expires).toBe('2026-04-28');
   });
 
+  it('splits semicolon-joined code groups into one entry per code, sharing metadata', () => {
+    const codes = parseCodes(fixture);
+    const first = codes.find((c) => c.code === 'GROUPCODE1ABC');
+    const second = codes.find((c) => c.code === 'GROUPCODE2DEF');
+    expect(first).toBeDefined();
+    expect(second).toBeDefined();
+    expect(first?.server).toBe('G');
+    expect(second?.server).toBe('G');
+    expect(first?.rewards).toEqual([
+      { item: 'Primogem', qty: 60 },
+      { item: "Adventurer's Experience", qty: 5 },
+    ]);
+    expect(second?.rewards).toEqual(first?.rewards);
+    expect(first?.discovered).toBe('2026-01-15');
+    expect(second?.discovered).toBe('2026-01-15');
+    expect(first?.expires).toBe('unknown');
+    expect(second?.expires).toBe('unknown');
+  });
+
   it('returns the expected number of real entries', () => {
     const codes = parseCodes(fixture);
-    expect(codes).toHaveLength(9);
+    expect(codes).toHaveLength(11);
   });
 
   it('returns an empty array when the Active Codes section is absent', () => {
