@@ -45,14 +45,21 @@ export function parseCodes(wikitext: string): CodeEntry[] {
   for (const match of body.matchAll(CODE_ROW_TEMPLATE)) {
     const inner = match[1];
     if (inner === undefined) continue;
-    const entry = parseRow(inner);
-    if (entry) entries.push(entry);
+    entries.push(...parseRow(inner));
   }
 
   return entries;
 }
 
-function parseRow(inner: string): CodeEntry | null {
+/**
+ * A single Code Row may declare a *group* of sibling codes joined by `;`
+ * in the first positional parameter (per the wiki's editor instructions).
+ * Sibling codes share metadata (server/rewards/discovered/expires) and
+ * mutually invalidate each other when redeemed, but the notifier should
+ * surface each one independently so the user can pick whichever they
+ * prefer. We expand the group here into one CodeEntry per token.
+ */
+function parseRow(inner: string): CodeEntry[] {
   const positional: string[] = [];
   for (const raw of inner.split('|')) {
     const part = raw.trim();
@@ -62,9 +69,9 @@ function parseRow(inner: string): CodeEntry | null {
     if (positional.length === POSITIONAL_PARAM_COUNT) break;
   }
 
-  if (positional.length < POSITIONAL_PARAM_COUNT) return null;
+  if (positional.length < POSITIONAL_PARAM_COUNT) return [];
 
-  const [code, server, rewardsRaw, discovered, expires] = positional as [
+  const [codeRaw, server, rewardsRaw, discovered, expires] = positional as [
     string,
     string,
     string,
@@ -72,13 +79,19 @@ function parseRow(inner: string): CodeEntry | null {
     string,
   ];
 
-  return {
+  const rewards = parseRewards(rewardsRaw);
+  const codes = codeRaw
+    .split(';')
+    .map((c) => c.trim())
+    .filter((c) => c.length > 0);
+
+  return codes.map((code) => ({
     code,
     server,
-    rewards: parseRewards(rewardsRaw),
+    rewards,
     discovered,
     expires,
-  };
+  }));
 }
 
 function isNamedParam(part: string): boolean {
